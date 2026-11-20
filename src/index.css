@@ -1,0 +1,161 @@
+@import "@fontsource-variable/instrument-sans/wdth.css";
+@import "tailwindcss";
+
+/*
+ * Palette: ink on cool paper, one cobalt for "yours", and a highlighter
+ * yellow used only to mark the letters your search matched.
+ * Light by default; the "dark" class on <html> turns on dark mode.
+ * Every text pair here passes WCAG AA (4.5:1), checked with axe.
+ */
+:root {
+  --background: #f2f3f0;
+  --surface: #ffffff;
+  --surface-2: #ecedea;
+  --border: #dfe0dc;
+  --border-strong: #c9cbc5;
+  --foreground: #16181d;
+  --muted: #3d4047;
+  --muted-2: #5e616a;
+  --primary: #2b3bd6;
+  --on-primary: #ffffff;
+  --primary-soft: #e7e9fb;
+  --highlight: #f2dd48;
+  --on-highlight: #16181d;
+  --danger: #bf2f1c;
+  --warn: #935400;
+  --success: #1d7438;
+  color-scheme: light;
+}
+:root.dark {
+  --background: #111215;
+  --surface: #1a1b20;
+  --surface-2: #24262c;
+  --border: #30323a;
+  --border-strong: #464953;
+  --foreground: #eeeff2;
+  --muted: #c4c6cd;
+  --muted-2: #9b9ea8;
+  --primary: #9ea9ff;
+  --on-primary: #12163a;
+  --primary-soft: #252a5c;
+  --highlight: #e6d33a;
+  --on-highlight: #16181d;
+  --danger: #f07a68;
+  --warn: #efb45c;
+  --success: #62d18c;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "Instrument Sans Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-highlight: var(--highlight);
+  --color-on-highlight: var(--on-highlight);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-success: var(--success);
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The page title uses the font's narrow width: the type itself says "measure". */
+.headline {
+  font-stretch: 82%;
+  letter-spacing: -0.02em;
+}
+/* The characters-left number, narrow so it reads like a ruler marking. */
+.counter {
+  font-stretch: 78%;
+  letter-spacing: -0.01em;
+}
+
+/* Tick marks every 10 characters on the empty part of the ruler (behind the tags). */
+.ruler::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to right, transparent 0 calc(10% - 2px), var(--background) calc(10% - 2px) 10%);
+}
+.ruler > * { position: relative; }
+
+/* The profile card is an object, not a panel: it gets its own weight. */
+.profile-card {
+  box-shadow: 0 0 0 1px var(--border), 0 18px 40px -24px rgb(22 24 29 / 0.35);
+}
+
+/* Chips: no text selection or iOS callout, so press-and-hold can start a drag. */
+.chip {
+  -webkit-touch-callout: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.chip.lifted {
+  transform: translateY(-2px) rotate(-1.5deg);
+  box-shadow: 0 10px 20px -8px rgb(22 24 29 / 0.45), 0 0 0 2px var(--highlight);
+}
+
+/* The one orchestrated moment: a new chip lands. A duplicate shakes instead. */
+@keyframes chip-pop {
+  0% { transform: translateY(4px) scale(0.9); opacity: 0.3; }
+  60% { transform: translateY(-1px) scale(1.04); opacity: 1; }
+  100% { transform: none; }
+}
+@keyframes chip-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+.chip-pop { animation: chip-pop 280ms cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+.chip-shake { animation: chip-shake 160ms ease-in-out 2; box-shadow: 0 0 0 2px var(--highlight); }
+
+/* The dropdown opens from the field, quickly. It answers your typing. */
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+.dropdown { animation: drop-in 120ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+/* Where a dragged chip will land: a highlighter bar beside the target chip. */
+.chip.drop-before::before,
+.chip.drop-after::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--highlight);
+  box-shadow: 0 0 0 1px var(--foreground);
+}
+.chip.drop-before::before { left: -5px; }
+.chip.drop-after::after { right: -5px; }
+.chip.lifted { pointer-events: none; transition: none; }
+
+/* Fade the right edge of the tab row on small screens, where it scrolls. */
+@media (max-width: 639px) {
+  .tabs-fade {
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+  }
+}

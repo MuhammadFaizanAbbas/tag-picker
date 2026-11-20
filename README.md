@@ -2,7 +2,7 @@
 
 A skills picker for a profile page. It helps you choose and order your skills within a 100-character limit, and it never adds or loses a tag without you meaning it to.
 
-**Live demo:** [VERCEL_LINK](VERCEL_LINK)  
+**Live demo:** [VERCEL_LINK](https://tag-picker-vu6h.vercel.app)  
 **What I changed and why:** [NOTE.md](./NOTE.md)
 
 ## Run it
